@@ -8,14 +8,14 @@ const api = express()
 api.use(express.json())
 api.use(express.urlencoded({extended:false}))
 
-api.get('/status',async (request:Request, response:Response) =>{
-     return await response.send({
+api.get('/status', (request:Request, response:Response) =>{
+     return  response.send({
           qr_code: sender.qrCode,
           connected:sender.isConnected
      })
 })
 
-api.post('/send', async(request:Request, response:Response) =>{
+api.post('/send/text', async(request:Request, response:Response) =>{
     const {number ,message} = request.body;
 
    try{
