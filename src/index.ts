@@ -15,6 +15,19 @@ api.get('/status', (request:Request, response:Response) =>{
      })
 })
 
+api.get('/listAll/message', async (request: Request, response: Response) => {
+     try {
+       const chats = await sender.listAllMessage();
+       const recentChats = chats.slice(0, 50); // retorna as 50 conversas mais recentes
+   
+       response.json(recentChats);
+     } catch (error) {
+       console.error(error);
+   
+       response.status(500).json({ status: "error", info: error });
+     }
+   });
+
 api.post('/send/text', async(request:Request, response:Response) =>{
     const {number ,message} = request.body;
 

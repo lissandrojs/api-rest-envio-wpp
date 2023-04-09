@@ -12,6 +12,10 @@ class Sender {
     private connected : boolean;
     private qr : QRCode;
 
+    constructor(){
+        this.initialize()
+    }
+
      get isConnected () : boolean {
         return this.connected
     } 
@@ -20,13 +24,21 @@ class Sender {
         return this.qr
     }
 
-
-    constructor(){
-        this.initialize()
-    }
     async sendText(to:string,body:string){
        await this.client.sendText(to,body)
     }
+    
+  async listAllMessage(): Promise<Message[]> {
+    const chats = await this.client.getAllChats();
+    const messages: Message[] = [];
+
+    for (const chat of chats) {
+      const chatMessages = await this.client.getAllMessagesInChat(chat.id._serialized,true, false); // paramentos id , se vai mostrar as minhas messagens , e se vai incluir ou nao notificações
+      messages.push(...chatMessages);
+    }
+
+    return messages;
+  }
 
     private initialize () {
         const qr = (base64Qr:string , asciiQR:string,attempts:number,urlCode?:string) => {
@@ -45,9 +57,6 @@ class Sender {
             client.onStateChange((state)=>{ 
                 this.connected =  state === SocketState.CONNECTED
             })
-            // 5598755486@c.us   este @c.us e pra dizer que e pra um contato
-            // this.sendText('5531975244344@c.us',"ola e um test")
-
         }
 
         const config = {
@@ -56,7 +65,7 @@ class Sender {
             statusFind: status
           };
 
-        create("wpp-sender",qr).then((client) => { start(client)})
+     create("wpp-sender",qr).then((client) => { start(client)})
         .catch((error) => console.error(error))
     }
 }
